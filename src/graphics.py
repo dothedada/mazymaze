@@ -32,9 +32,15 @@ class Window:
 
     def draw_line(self, line, fill_color="red", width=2):
         if not isinstance(line, Line):
-            raise TypeError("Line param must be a valid Line instance")
+            raise TypeError("Line param must be a valid Line class instance")
 
         line.draw(self.__canvas, fill_color, width)
+
+    def draw_cell(self, cell, line_color="green", width=2):
+        if not isinstance(cell, Cell):
+            raise TypeError("Cell param must be a valid Cell class instance")
+
+        cell.draw(self, line_color, width)
 
 
 class Point:
@@ -63,3 +69,78 @@ class Line:
             fill=fill_color,
             width=width,
         )
+
+
+class Cell:
+    def __init__(
+        self,
+        origin,
+        end,
+        has_top=True,
+        has_right=True,
+        has_bottom=True,
+        has_left=True,
+    ):
+        if not isinstance(origin, Point) or not isinstance(end, Point):
+            raise TypeError("Origin and End must be a valid Point classes")
+
+        self.__origin = origin
+        self.__end = end
+        self.has_top = has_top
+        self.has_right = has_right
+        self.has_bottom = has_bottom
+        self.has_left = has_left
+
+    @property
+    def walls(self):
+        return {
+            "top": (
+                self.__origin.x,
+                self.__origin.y,
+                self.__end.x,
+                self.__origin.y,
+            ),
+            "right": (
+                self.__end.x,
+                self.__origin.y,
+                self.__end.x,
+                self.__end.y,
+            ),
+            "bottom": (
+                self.__end.x,
+                self.__end.y,
+                self.__origin.x,
+                self.__end.y,
+            ),
+            "left": (
+                self.__origin.x,
+                self.__end.y,
+                self.__origin.x,
+                self.__origin.y,
+            ),
+        }
+
+    def update_origin(self, origin_point):
+        if not isinstance(origin_point, Point):
+            raise TypeError("Must be a valid Point Class")
+        self.__origin = origin_point
+
+    def update_end(self, end_point):
+        if not isinstance(end_point, Point):
+            raise TypeError("Must be a valid Point Class")
+        self.__end = end_point
+
+    def draw(self, window, color, width):
+        if not isinstance(window, Window):
+            raise TypeError("Must be a valid Window Class")
+
+        for wall in self.walls:
+            if getattr(self, f"has_{wall}"):
+                window.draw_line(
+                    Line(
+                        Point(*self.walls[wall][:2]),
+                        Point(*self.walls[wall][2:]),
+                    ),
+                    fill_color=color,
+                    width=width,
+                )
