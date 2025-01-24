@@ -9,15 +9,22 @@ class Cell:
         self.has_right = True
         self.has_bottom = True
         self.has_left = True
-        self.window = window
+        self._window = window
 
     @property
-    def walls(self):
+    def _walls(self):
         return {
             "top": (self._start.x, self._start.y, self._end.x, self._start.y),
             "right": (self._end.x, self._start.y, self._end.x, self._end.y),
             "bottom": (self._end.x, self._end.y, self._start.x, self._end.y),
             "left": (self._start.x, self._end.y, self._start.x, self._start.y),
+        }
+
+    @property
+    def center(self):
+        return {
+            "x": self._start.x + (self._end.x - self._start.x) / 2,
+            "y": self._start.y + (self._end.y - self._start.y) / 2,
         }
 
     def draw(self, start, end, color="red", width=2):
@@ -26,10 +33,20 @@ class Cell:
         self._start = start
         self._end = end
 
-        for wall, cords in self.walls.items():
+        for wall, cords in self._walls.items():
             if getattr(self, f"has_{wall}"):
-                self.window.draw_line(
+                self._window.draw_line(
                     Line(Point(*cords[:2]), Point(*cords[2:])),
                     fill_color=color,
                     width=width,
                 )
+
+    def draw_move(self, to_cell, undo=False):
+        color = "red" if not undo else "gray"
+        self._window.draw_line(
+            Line(
+                Point(self.center["x"], self.center["y"]),
+                Point(to_cell.center["x"], to_cell.center["y"]),
+            ),
+            fill_color=color,
+        )
