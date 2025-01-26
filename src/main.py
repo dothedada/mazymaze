@@ -16,8 +16,6 @@ def main():
 
     maze = Maze(margin, margin, rows, cols, cell_size_x, cell_size_y, win)
 
-    maze._break_entrance_and_exit()
-
     win.wait_for_close()
 
 
