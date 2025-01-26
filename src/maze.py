@@ -4,7 +4,16 @@ from graphics import Point
 
 
 class Maze:
-    def __init__(self, x1, y1, rows, cols, cell_size_x, cell_size_y, window):
+    def __init__(
+        self,
+        x1,
+        y1,
+        rows,
+        cols,
+        cell_size_x,
+        cell_size_y,
+        window=None,
+    ):
         self._cells = []
         self._x1 = x1
         self._y1 = y1
@@ -20,7 +29,6 @@ class Maze:
             self._cells.append([])
             for j in range(self._rows):
                 self._cells[i].append(Cell(self._window))
-                self._draw_cell(i, j)
 
         for i in range(len(self._cells)):
             for j in range(len(self._cells[i])):
@@ -41,3 +49,11 @@ class Maze:
 
         self._window.redraw()
         time.sleep(0.05)
+
+    def _break_entrance_and_exit(self):
+        self._cells[0][0].has_top = False
+        self._cells[0][0].has_left = False
+        self._draw_cell(0, 0)
+        self._cells[-1][-1].has_bottom = False
+        self._cells[-1][-1].has_right = False
+        self._draw_cell(self._cols - 1, self._rows - 1)
