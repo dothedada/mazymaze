@@ -1,8 +1,9 @@
+from colors import WALLS, BKG, UNDO_PATH, PATH
 from graphics import Point, Line
 
 
 class Cell:
-    def __init__(self, window):
+    def __init__(self, window=None):
         self._start = None
         self._end = None
         self.has_top = True
@@ -27,22 +28,25 @@ class Cell:
             "y": self._start.y + (self._end.y - self._start.y) / 2,
         }
 
-    def draw(self, start, end, color="red", width=2):
+    def draw(self, start, end, color=WALLS, width=2):
+        if self._window is None:
+            return
+
         if not isinstance(start, Point) or not isinstance(end, Point):
             raise TypeError("Must be a valid Point Class")
+
         self._start = start
         self._end = end
 
         for wall, cords in self._walls.items():
-            if getattr(self, f"has_{wall}"):
-                self._window.draw_line(
-                    Line(Point(*cords[:2]), Point(*cords[2:])),
-                    fill_color=color,
-                    width=width,
-                )
+            self._window.draw_line(
+                Line(Point(*cords[:2]), Point(*cords[2:])),
+                fill_color=color if getattr(self, f"has_{wall}") else BKG,
+                width=width,
+            )
 
     def draw_move(self, to_cell, undo=False):
-        color = "red" if not undo else "gray"
+        color = PATH if not undo else UNDO_PATH
         self._window.draw_line(
             Line(
                 Point(self.center["x"], self.center["y"]),

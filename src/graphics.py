@@ -1,3 +1,4 @@
+from colors import BKG, WALLS
 from tkinter import Tk, Canvas  # add => BOTH later
 
 
@@ -7,7 +8,7 @@ class Window:
         self.__root.title("Mazy MAAAZEEEEE!!!")
         self.__canvas = Canvas(
             master=self.__root,
-            bg="white",
+            bg=BKG,
             width=width,
             height=height,
         )
@@ -30,7 +31,7 @@ class Window:
         self.__is_active = False
         self.__root.destroy()
 
-    def draw_line(self, line, fill_color="red", width=2):
+    def draw_line(self, line, fill_color=WALLS, width=2):
         if not isinstance(line, Line):
             raise TypeError("Line param must be a valid Line class instance")
 
