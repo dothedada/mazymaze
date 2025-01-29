@@ -64,17 +64,19 @@ class Maze:
         self._cells[-1][-1].has_bottom = False
         self._draw_cell(self._cols - 1, self._rows - 1)
 
-    def _break_walls_r(self, i, j):
-        self._cells[i][j].visited = True
-        neighbors = [
+    def __neighbors(self, i, j):
+        return [
             ("top", i, j + -1, "bottom"),
             ("right", i + 1, j, "left"),
             ("bottom", i, j + 1, "top"),
             ("left", i + -1, j, "right"),
         ]
+
+    def _break_walls_r(self, i, j):
+        self._cells[i][j].visited = True
         while True:
             directions = []
-            for neighbor in neighbors:
+            for neighbor in self.__neighbors(i, j):
                 if (
                     0 <= neighbor[1] < self._cols
                     and 0 <= neighbor[2] < self._rows
@@ -94,3 +96,27 @@ class Maze:
         for i in range(self._cols):
             for j in range(self._rows):
                 self._cells[i][j].visited = False
+
+    def solve(self):
+        return self._solve_r(0, 0)
+
+    def _solve_r(self, i, j):
+        self._animate()
+        current = self._cells[i][j]
+        current.visited = True
+        if i == self._cols - 1 and j == self._rows - 1:
+            return True
+        neighbors = self.__neighbors(i, j)
+        for neighbor in neighbors:
+            if (
+                0 <= neighbor[1] < self._cols
+                and 0 <= neighbor[2] < self._rows
+                and not getattr(current, f"has_{neighbor[0]}")
+                and not self._cells[neighbor[1]][neighbor[2]].visited
+            ):
+                current.draw_move(self._cells[neighbor[1]][neighbor[2]])
+                if self._solve_r(neighbor[1], neighbor[2]):
+                    return True
+                else:
+                    current.draw_move(self._cells[neighbor[1]][neighbor[2]], undo=True)
+        return False
