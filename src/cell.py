@@ -11,6 +11,7 @@ class Cell:
         self.has_bottom = True
         self.has_left = True
         self._window = window
+        self.visited = False
 
     @property
     def _walls(self):
